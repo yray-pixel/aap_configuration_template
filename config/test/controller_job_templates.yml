@@ -1,1 +1,8 @@
-controller_templates_x2a_test: []
+---
+controller_templates_x2a_test:
+  - name: x2a_test_nginx_multisite
+    project: x2a_test_chef_examples
+    job_type: run
+    playbook: ansible/run_nginx_multisite.yml
+    inventory: ray-test
+    execution_environment: Default execution environment

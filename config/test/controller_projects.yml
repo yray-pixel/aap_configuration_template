@@ -1,1 +1,12 @@
-controller_projects_x2a_test: []
+---
+controller_projects_x2a_test:
+  - name: x2a_test_chef_examples
+    description: X2A migrated Chef example
+    organization: ray-test
+    scm_type: git
+    scm_url: https://github.com/yray-pixel/chef-examples.git
+    scm_branch: aap-test
+    scm_clean: true
+    scm_update_on_launch: true
+    update_project: true
+    wait: true
