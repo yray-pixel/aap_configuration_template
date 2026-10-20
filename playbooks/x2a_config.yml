@@ -1,0 +1,18 @@
+---
+- name: Apply isolated X2A AAP configuration
+  hosts: all
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Load X2A test configuration
+      ansible.builtin.include_vars:
+        dir: ../config/test
+        extensions:
+          - yml
+
+    - name: Apply X2A test configuration
+      ansible.builtin.include_role:
+        name: infra.aap_configuration.dispatch
+      vars:
+        dispatch_include_wildcard_vars: true
+...
