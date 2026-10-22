@@ -1,3 +1,12 @@
 ---
-controller_projects_dev: []
-...
+controller_projects_dev:
+  - name: x2a_66d7c97d_5cf3_4913_8a19_3d3e57770604
+    organization: Default
+    scm_type: git
+    scm_url: https://github.com/yray-pixel/chef-examples.git
+    scm_branch: testAAP9
+    scm_update_on_launch: true
+    scm_clean: true
+    scm_delete_on_update: true
+    update_project: true
+    wait: true

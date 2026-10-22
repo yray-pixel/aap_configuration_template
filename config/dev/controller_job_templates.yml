@@ -1,3 +1,10 @@
 ---
-controller_templates_dev: []
-...
+controller_templates_dev:
+  - name: x2a_66d7c97d_5cf3_4913_8a19_3d3e57770604_nginx_multisite
+    organization: Default
+    project: x2a_66d7c97d_5cf3_4913_8a19_3d3e57770604
+    job_type: run
+    playbook: jj-66d7c9/ansible/run_nginx_multisite.yml
+    inventory: fdf
+    credentials: []
+    prevent_instance_group_fallback: false
