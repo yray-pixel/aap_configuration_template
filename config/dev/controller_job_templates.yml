@@ -8,3 +8,11 @@ controller_templates_dev:
     inventory: fdf
     credentials: []
     prevent_instance_group_fallback: false
+  - name: x2a_nginx_multisite
+    organization: Default
+    project: x2a_nginx_multisite
+    job_type: run
+    playbook: hghj-b0d676/ansible/run_nginx_multisite.yml
+    inventory: inventory
+    credentials: []
+    prevent_instance_group_fallback: false
