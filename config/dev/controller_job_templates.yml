@@ -1,3 +1,11 @@
 ---
-controller_templates_dev: []
-...
+controller_templates_dev:
+  - name: x2a_ac0953b7_68f4_4f88_a8e2_47de867e4b2e_nginx_multisite
+    organization: Default
+    project: x2a_ac0953b7_68f4_4f88_a8e2_47de867e4b2e
+    job_type: run
+    playbook: nginx-test-ac0953/ansible/run_nginx_multisite.yml
+    inventory: inventory
+    credentials:
+      - dfg
+    prevent_instance_group_fallback: false
