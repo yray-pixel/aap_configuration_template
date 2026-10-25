@@ -10,3 +10,13 @@ controller_projects_dev:
     scm_delete_on_update: true
     update_project: true
     wait: true
+  - name: x2a_nginx_multisite
+    organization: Default3
+    scm_type: git
+    scm_url: https://github.com/yray-pixel/chef-examples.git
+    scm_branch: testAAP15
+    scm_update_on_launch: true
+    scm_clean: true
+    scm_delete_on_update: true
+    update_project: true
+    wait: true
