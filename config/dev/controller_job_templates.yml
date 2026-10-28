@@ -9,3 +9,12 @@ controller_templates_dev:
     credentials:
       - dfg
     prevent_instance_group_fallback: false
+  - name: x2a_nginx_multisite
+    organization: Default
+    project: x2a_nginx_multisite
+    job_type: run
+    playbook: cvbc-f828b0/ansible/run_nginx_multisite.yml
+    inventory: fff
+    credentials: []
+    execution_environment: sdfsdfsdf
+    prevent_instance_group_fallback: false
