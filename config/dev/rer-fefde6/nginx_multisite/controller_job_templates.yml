@@ -1,0 +1,8 @@
+controller_templates_x2a:
+  - name: rer-fefde6_nginx_multisite
+    organization: Default
+    project: rer-fefde6
+    job_type: run
+    playbook: rer-fefde6/ansible/run_nginx_multisite.yml
+    inventory: asd
+    prevent_instance_group_fallback: false
