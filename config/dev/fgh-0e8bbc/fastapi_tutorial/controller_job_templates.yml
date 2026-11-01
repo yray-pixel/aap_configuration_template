@@ -1,0 +1,8 @@
+controller_templates_x2a:
+  - name: fgh-0e8bbc_fastapi_tutorial
+    organization: Default
+    project: fgh-0e8bbc
+    job_type: run
+    playbook: fgh-0e8bbc/ansible/run_fastapi_tutorial.yml
+    inventory: demo-ray
+    prevent_instance_group_fallback: false
