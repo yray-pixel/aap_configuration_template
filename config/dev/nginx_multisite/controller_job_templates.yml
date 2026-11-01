@@ -1,0 +1,8 @@
+controller_templates_x2a:
+  - name: x2a_nginx_multisite
+    organization: Default
+    project: x2a_nginx_multisite
+    job_type: run
+    playbook: nginx-test-ee351c/ansible/run_nginx_multisite.yml
+    inventory: okok
+    prevent_instance_group_fallback: false
