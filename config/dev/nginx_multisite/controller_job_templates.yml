@@ -1,0 +1,12 @@
+controller_templates_x2a:
+  - name: x2a_nginx_multisite
+    organization: Default
+    project: x2a_nginx_multisite
+    job_type: run
+    playbook: sddfg-4aaecd/ansible/run_nginx_multisite.yml
+    inventory: demo-ray
+    prevent_instance_group_fallback: false
+    credentials:
+      - fgf
+      - hhhh
+    execution_environment: default
