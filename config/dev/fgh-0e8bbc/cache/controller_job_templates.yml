@@ -1,0 +1,9 @@
+controller_templates_x2a:
+  - name: fgh-0e8bbc_cache
+    organization: Default
+    project: fgh-0e8bbc
+    job_type: run
+    playbook: fgh-0e8bbc/ansible/run_cache.yml
+    inventory: demo-ray
+    prevent_instance_group_fallback: false
+    execution_environment: test
