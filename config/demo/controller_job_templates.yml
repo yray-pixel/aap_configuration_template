@@ -1,0 +1,29 @@
+---
+controller_templates_demo:
+  - name: deploy_app_demo
+    description: Deploy the OpenShift application
+    organization: ray
+    project: demo-ray-app
+    inventory: local
+    playbook: playbooks/demo/app.yml
+    job_type: run
+    execution_environment: Default execution environment
+    concurrent_jobs_enabled: false
+    credentials:
+      - openshift
+    extra_vars:
+      app_state: present
+
+  - name: remove_app_demo
+    description: Remove the OpenShift application
+    organization: ray
+    project: demo-ray-app
+    inventory: local
+    playbook: playbooks/demo/app.yml
+    job_type: run
+    execution_environment: Default execution environment
+    concurrent_jobs_enabled: false
+    credentials:
+      - openshift
+    extra_vars:
+      app_state: absent

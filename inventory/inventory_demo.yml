@@ -1,0 +1,25 @@
+---
+all:
+  children:
+    demo:
+      hosts:
+        localhost:
+      vars:
+        ansible_connection: local
+        ansible_python_interpreter: /usr/bin/python3.13
+
+  vars:
+    env: demo
+
+    aap_hostname: "{{ lookup('ansible.builtin.env', 'AAP_HOSTNAME') | regex_replace('^https?://', '') | regex_replace('/+$', '') }}"
+    aap_url: "https://{{ aap_hostname }}"
+    aap_username: "{{ lookup('ansible.builtin.env', 'AAP_USERNAME') }}"
+    aap_password: "{{ lookup('ansible.builtin.env', 'AAP_PASSWORD') }}"
+    aap_validate_certs: "{{ lookup('ansible.builtin.env', 'AAP_VERIFY_SSL') | bool }}"
+
+    openshift_host: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST') }}"
+    openshift_api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
+    openshift_validate_certs: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_VERIFY_SSL') | bool }}"
+
+    git_username: "{{ lookup('ansible.builtin.env', 'GITHUB_USERNAME') }}"
+    git_token: "{{ lookup('ansible.builtin.env', 'GITHUB_TOKEN') }}"

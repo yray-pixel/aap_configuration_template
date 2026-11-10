@@ -1,0 +1,93 @@
+---
+- name: Configure the AAP demo environment
+  hosts: all
+  connection: local
+  gather_facts: false
+
+  vars:
+    controller_host: "{{ lookup('ansible.builtin.env', 'CONTROLLER_HOST') }}"
+    controller_username: "{{ lookup('ansible.builtin.env', 'CONTROLLER_USERNAME') }}"
+    controller_password: "{{ lookup('ansible.builtin.env', 'CONTROLLER_PASSWORD') }}"
+    controller_validate_certs: "{{ lookup('ansible.builtin.env', 'CONTROLLER_VERIFY_SSL') | bool }}"
+
+  tasks:
+    - name: Include demo configuration variables
+      ansible.builtin.include_vars:
+        dir: ../../config/demo
+        extensions:
+          - yml
+
+    - name: Create organizations
+      ansible.controller.organization:
+        name: "{{ item.name }}"
+        description: "{{ item.description | default(omit) }}"
+        state: present
+      loop: "{{ aap_organizations_demo }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Create credentials
+      ansible.controller.credential:
+        name: "{{ item.name }}"
+        organization: "{{ item.organization }}"
+        credential_type: "{{ item.credential_type }}"
+        description: "{{ item.description | default(omit) }}"
+        inputs: "{{ item.inputs }}"
+        state: present
+      loop: "{{ controller_credentials_demo }}"
+      loop_control:
+        label: "{{ item.name }}"
+      no_log: true
+
+    - name: Create inventories
+      ansible.controller.inventory:
+        name: "{{ item.name }}"
+        organization: "{{ item.organization }}"
+        description: "{{ item.description | default(omit) }}"
+        state: present
+      loop: "{{ controller_inventories_demo }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Create hosts
+      ansible.controller.host:
+        name: "{{ item.name }}"
+        inventory: "{{ item.inventory }}"
+        variables: "{{ item.variables }}"
+        state: present
+      loop: "{{ controller_hosts_demo }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Create projects
+      ansible.controller.project:
+        name: "{{ item.name }}"
+        organization: "{{ item.organization }}"
+        description: "{{ item.description | default(omit) }}"
+        scm_type: "{{ item.scm_type }}"
+        scm_url: "{{ item.scm_url }}"
+        scm_branch: "{{ item.scm_branch }}"
+        scm_credential: "{{ item.scm_credential }}"
+        scm_clean: "{{ item.scm_clean }}"
+        update_project: "{{ item.update_project }}"
+        wait: "{{ item.wait }}"
+        state: present
+      loop: "{{ controller_projects_demo }}"
+      loop_control:
+        label: "{{ item.name }}"
+
+    - name: Create job templates
+      ansible.controller.job_template:
+        name: "{{ item.name }}"
+        organization: "{{ item.organization }}"
+        project: "{{ item.project }}"
+        inventory: "{{ item.inventory }}"
+        playbook: "{{ item.playbook }}"
+        job_type: "{{ item.job_type }}"
+        credentials: "{{ item.credentials }}"
+        execution_environment: "{{ item.execution_environment }}"
+        extra_vars: "{{ item.extra_vars | default(omit) }}"
+        state: present
+      loop: "{{ controller_templates_demo }}"
+      loop_control:
+        label: "{{ item.name }}"

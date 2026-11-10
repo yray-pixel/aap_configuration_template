@@ -1,0 +1,114 @@
+---
+- name: Bootstrap the AAP demo environment
+  hosts: all
+  connection: local
+  gather_facts: false
+
+  environment:
+    CONTROLLER_HOST: "{{ aap_url }}"
+    CONTROLLER_USERNAME: "{{ aap_username }}"
+    CONTROLLER_PASSWORD: "{{ aap_password }}"
+    CONTROLLER_VERIFY_SSL: "{{ 'true' if aap_validate_certs else 'false' }}"
+    CONTROLLER_OPTIONAL_API_URLPATTERN_PREFIX: /api/controller/
+
+  pre_tasks:
+    - name: Validate required environment variables
+      ansible.builtin.assert:
+        that:
+          - aap_hostname | length > 0
+          - aap_username | length > 0
+          - aap_password | length > 0
+          - openshift_host | length > 0
+          - openshift_api_key | length > 0
+          - git_username | length > 0
+          - git_token | length > 0
+        fail_msg: >-
+          Required environment variables are missing. Set them in your local
+          .env file before running this playbook.
+
+  tasks:
+    - name: Create the organization
+      awx.awx.organization:
+        name: ray
+        description: Ray organization for the demo environment
+        state: present
+
+    - name: Create the AAP credential
+      awx.awx.credential:
+        name: aap
+        organization: ray
+        credential_type: Red Hat Ansible Automation Platform
+        inputs:
+          host: "{{ aap_url }}"
+          username: "{{ aap_username }}"
+          password: "{{ aap_password }}"
+        state: present
+      no_log: true
+
+    - name: Create the Git credential
+      awx.awx.credential:
+        name: git
+        organization: ray
+        credential_type: Source Control
+        inputs:
+          username: "{{ git_username }}"
+          password: "{{ git_token }}"
+        state: present
+      no_log: true
+
+    - name: Create the OpenShift credential
+      awx.awx.credential:
+        name: openshift
+        organization: ray
+        credential_type: OpenShift or Kubernetes API Bearer Token
+        inputs:
+          host: "{{ openshift_host }}"
+          bearer_token: "{{ openshift_api_key }}"
+          verify_ssl: "{{ openshift_validate_certs }}"
+        state: present
+      no_log: true
+
+    - name: Create the inventory
+      awx.awx.inventory:
+        name: local
+        description: Local inventory
+        organization: ray
+        state: present
+
+    - name: Create the localhost host
+      awx.awx.host:
+        name: localhost
+        inventory: local
+        variables:
+          ansible_connection: local
+        state: present
+
+    - name: Create the project
+      awx.awx.project:
+        name: demo-ray-app
+        description: Demo Ray application project
+        organization: ray
+        scm_type: git
+        scm_url: https://github.com/yray-pixel/aap_configuration_template.git
+        scm_branch: demo
+        credential: git
+        scm_clean: true
+        scm_update_on_launch: true
+        update_project: true
+        wait: true
+        state: present
+
+    - name: Create the configure job template
+      awx.awx.job_template:
+        name: configure
+        description: Apply the demo configuration from Git
+        organization: ray
+        project: demo-ray-app
+        inventory: local
+        playbook: playbooks/demo/configure.yml
+        job_type: run
+        credentials:
+          - aap
+          - openshift
+        execution_environment: Default execution environment
+        state: present

@@ -8,4 +8,5 @@ collections:
   - name: ansible.hub
   - name: ansible.controller
   - name: ansible.eda
+  - name: kubernetes.core
 ...

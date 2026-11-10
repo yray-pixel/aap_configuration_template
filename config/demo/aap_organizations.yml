@@ -1,0 +1,4 @@
+---
+aap_organizations_demo:
+  - name: demo
+    description: organization for the demo environment

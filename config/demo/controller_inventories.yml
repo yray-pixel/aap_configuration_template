@@ -1,0 +1,5 @@
+---
+controller_inventories_demo:
+  - name: local
+    description: Local inventory
+    organization: ray

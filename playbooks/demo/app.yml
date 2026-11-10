@@ -1,0 +1,122 @@
+---
+- name: Manage the OpenShift application
+  hosts: all
+  connection: local
+  gather_facts: false
+
+  vars:
+    app_namespace: ray
+    app_name: hello-openshift
+    app_image: quay.io/openshifttest/hello-openshift:multiarch
+    app_replicas: 1
+    app_state: present
+
+    openshift_host: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_HOST') }}"
+    openshift_api_key: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_API_KEY') }}"
+    openshift_validate_certs: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_VERIFY_SSL') | bool }}"
+    openshift_ca_cert: "{{ lookup('ansible.builtin.env', 'K8S_AUTH_SSL_CA_CERT') }}"
+
+  tasks:
+    - name: Manage the application namespace
+      kubernetes.core.k8s:
+        host: "{{ openshift_host }}"
+        api_key: "{{ openshift_api_key }}"
+        validate_certs: "{{ openshift_validate_certs }}"
+        ca_cert: "{{ openshift_ca_cert | default(omit, true) }}"
+        state: "{{ app_state }}"
+        wait: true
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: "{{ app_namespace }}"
+            labels:
+              app.kubernetes.io/managed-by: aap-config-as-code
+
+    - name: Manage the application deployment
+      kubernetes.core.k8s:
+        host: "{{ openshift_host }}"
+        api_key: "{{ openshift_api_key }}"
+        validate_certs: "{{ openshift_validate_certs }}"
+        ca_cert: "{{ openshift_ca_cert | default(omit, true) }}"
+        state: present
+        wait: true
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: "{{ app_name }}"
+            namespace: "{{ app_namespace }}"
+            labels:
+              app.kubernetes.io/name: "{{ app_name }}"
+              app.kubernetes.io/managed-by: aap-config-as-code
+          spec:
+            replicas: "{{ app_replicas }}"
+            selector:
+              matchLabels:
+                app.kubernetes.io/name: "{{ app_name }}"
+            template:
+              metadata:
+                labels:
+                  app.kubernetes.io/name: "{{ app_name }}"
+                  app.kubernetes.io/managed-by: aap-config-as-code
+              spec:
+                containers:
+                  - name: hello-openshift
+                    image: "{{ app_image }}"
+                    imagePullPolicy: IfNotPresent
+                    ports:
+                      - name: http
+                        containerPort: 8080
+                        protocol: TCP
+      when: app_state == 'present'
+
+    - name: Manage the application service
+      kubernetes.core.k8s:
+        host: "{{ openshift_host }}"
+        api_key: "{{ openshift_api_key }}"
+        validate_certs: "{{ openshift_validate_certs }}"
+        ca_cert: "{{ openshift_ca_cert | default(omit, true) }}"
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: "{{ app_name }}"
+            namespace: "{{ app_namespace }}"
+            labels:
+              app.kubernetes.io/name: "{{ app_name }}"
+              app.kubernetes.io/managed-by: aap-config-as-code
+          spec:
+            selector:
+              app.kubernetes.io/name: "{{ app_name }}"
+            ports:
+              - name: http
+                port: 80
+                targetPort: http
+                protocol: TCP
+      when: app_state == 'present'
+
+    - name: Manage the application route
+      kubernetes.core.k8s:
+        host: "{{ openshift_host }}"
+        api_key: "{{ openshift_api_key }}"
+        validate_certs: "{{ openshift_validate_certs }}"
+        ca_cert: "{{ openshift_ca_cert | default(omit, true) }}"
+        state: present
+        definition:
+          apiVersion: route.openshift.io/v1
+          kind: Route
+          metadata:
+            name: "{{ app_name }}"
+            namespace: "{{ app_namespace }}"
+            labels:
+              app.kubernetes.io/name: "{{ app_name }}"
+              app.kubernetes.io/managed-by: aap-config-as-code
+          spec:
+            to:
+              kind: Service
+              name: "{{ app_name }}"
+            port:
+              targetPort: http
+      when: app_state == 'present'

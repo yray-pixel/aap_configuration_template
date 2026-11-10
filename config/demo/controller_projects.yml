@@ -1,0 +1,12 @@
+---
+controller_projects_demo:
+  - name: demo-ray-app
+    description: Demo Ray application project
+    organization: ray
+    scm_type: git
+    scm_url: https://github.com/yray-pixel/aap_configuration_template.git
+    scm_branch: demo
+    scm_credential: git
+    scm_clean: true
+    update_project: true
+    wait: true

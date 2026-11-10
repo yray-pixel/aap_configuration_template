@@ -1,0 +1,7 @@
+---
+controller_hosts_demo:
+  - name: localhost
+    inventory: local
+    variables:
+      ansible_connection: local
+      ansible_host: 127.0.0.1
