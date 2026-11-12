@@ -1,0 +1,22 @@
+---
+- name: Print a secret injected from HashiCorp Vault
+  hosts: all
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Read the Vault-sourced credential value
+      ansible.builtin.set_fact:
+        vault_message: "{{ ansible_password }}"
+
+    - name: Ensure the credential was injected
+      ansible.builtin.assert:
+        that:
+          - vault_message | length > 0
+        fail_msg: >-
+          The HashiCorp Vault Secret Lookup credential did not populate the
+          target Machine credential password.
+
+    - name: Print the message
+      ansible.builtin.debug:
+        msg: "{{ vault_message }}"

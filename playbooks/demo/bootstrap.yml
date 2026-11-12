@@ -109,6 +109,5 @@
         job_type: run
         credentials:
           - aap
-          - openshift
         execution_environment: Default execution environment
         state: present

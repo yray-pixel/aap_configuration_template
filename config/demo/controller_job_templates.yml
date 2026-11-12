@@ -27,3 +27,15 @@ controller_templates_demo:
       - openshift
     extra_vars:
       app_state: absent
+
+  - name: vault_demo
+    description: Print a secret injected from HashiCorp Vault
+    organization: ray
+    project: demo-ray-app
+    inventory: local
+    playbook: playbooks/demo/vault.yml
+    job_type: run
+    execution_environment: Default execution environment
+    concurrent_jobs_enabled: false
+    credentials:
+      - vault-demo

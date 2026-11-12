@@ -10,6 +10,9 @@
     controller_password: "{{ lookup('ansible.builtin.env', 'CONTROLLER_PASSWORD') }}"
     controller_validate_certs: "{{ lookup('ansible.builtin.env', 'CONTROLLER_VERIFY_SSL') | bool }}"
 
+  environment:
+    CONTROLLER_OPTIONAL_API_URLPATTERN_PREFIX: /api/controller/
+
   tasks:
     - name: Include demo configuration variables
       ansible.builtin.include_vars:
@@ -18,7 +21,7 @@
           - yml
 
     - name: Create organizations
-      ansible.controller.organization:
+      awx.awx.organization:
         name: "{{ item.name }}"
         description: "{{ item.description | default(omit) }}"
         state: present
@@ -27,7 +30,7 @@
         label: "{{ item.name }}"
 
     - name: Create credentials
-      ansible.controller.credential:
+      awx.awx.credential:
         name: "{{ item.name }}"
         organization: "{{ item.organization }}"
         credential_type: "{{ item.credential_type }}"
@@ -39,8 +42,20 @@
         label: "{{ item.name }}"
       no_log: true
 
+    - name: Create credential input sources
+      awx.awx.credential_input_source:
+        source_credential: "{{ item.source_credential }}"
+        target_credential: "{{ item.target_credential }}"
+        input_field_name: "{{ item.input_field_name }}"
+        metadata: "{{ item.metadata }}"
+        description: "{{ item.description | default(omit) }}"
+        state: present
+      loop: "{{ controller_credential_input_sources_demo }}"
+      loop_control:
+        label: "{{ item.source_credential }} -> {{ item.target_credential }}.{{ item.input_field_name }}"
+
     - name: Create inventories
-      ansible.controller.inventory:
+      awx.awx.inventory:
         name: "{{ item.name }}"
         organization: "{{ item.organization }}"
         description: "{{ item.description | default(omit) }}"
@@ -50,7 +65,7 @@
         label: "{{ item.name }}"
 
     - name: Create hosts
-      ansible.controller.host:
+      awx.awx.host:
         name: "{{ item.name }}"
         inventory: "{{ item.inventory }}"
         variables: "{{ item.variables }}"
@@ -60,7 +75,7 @@
         label: "{{ item.name }}"
 
     - name: Create projects
-      ansible.controller.project:
+      awx.awx.project:
         name: "{{ item.name }}"
         organization: "{{ item.organization }}"
         description: "{{ item.description | default(omit) }}"
@@ -77,7 +92,7 @@
         label: "{{ item.name }}"
 
     - name: Create job templates
-      ansible.controller.job_template:
+      awx.awx.job_template:
         name: "{{ item.name }}"
         organization: "{{ item.organization }}"
         project: "{{ item.project }}"
